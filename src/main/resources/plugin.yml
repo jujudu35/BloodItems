@@ -1,1 +1,26 @@
+name: BloodItems
+version: 1.0.0
+main: fr.blooditems.BloodItems
+api-version: '1.21'
 
+author: jujudu
+
+description: Blood SMP Custom Items
+
+commands:
+
+  blooditems:
+    aliases:
+      - bi
+    description: BloodItems command
+
+permissions:
+
+  blooditems.admin:
+    default: op
+
+  blooditems.give:
+    default: op
+
+  blooditems.reload:
+    default: op
