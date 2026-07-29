@@ -1,1 +1,41 @@
+armor:
 
+  farm:
+
+    helmet:
+      effect: NIGHT_VISION
+      amplifier: 0
+
+    chestplate:
+      effect: FIRE_RESISTANCE
+      amplifier: 0
+
+    leggings:
+      effect: LUCK
+      amplifier: 0
+
+    boots:
+      effect: SPEED
+      amplifier: 1
+
+  blood:
+
+    helmet:
+      effect: DOLPHINS_GRACE
+      amplifier: 0
+
+    chestplate:
+      effect: STRENGTH
+      amplifier: 1
+
+    leggings:
+      effect: HASTE
+      amplifier: 1
+
+    boots:
+      effect: SPEED
+      amplifier: 1
+
+hammer:
+
+  enabled: true
