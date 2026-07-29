@@ -46,7 +46,6 @@ public class ArmorManager {
                 );
 
                 break;
-
         }
 
     }
@@ -92,42 +91,13 @@ public class ArmorManager {
                 );
 
                 break;
-
         }
 
     }
 
 
 
-    private void removeHelmetEffects(Player player) {
-
-        player.removePotionEffect(
-                PotionEffectType.NIGHT_VISION
-        );
-
-        player.removePotionEffect(
-                PotionEffectType.DOLPHINS_GRACE
-        );
-
-    }
-
-
-
-    private void removeChestplateEffects(Player player) {
-
-        player.removePotionEffect(
-                PotionEffectType.FIRE_RESISTANCE
-        );
-
-        player.removePotionEffect(
-                PotionEffectType.STRENGTH
-        );
-
-    }
-
-
-
- public void applyLeggingsEffect(Player player, String id) {
+    public void applyLeggingsEffect(Player player, String id) {
 
         removeLeggingsEffects(player);
 
@@ -166,7 +136,6 @@ public class ArmorManager {
                 );
 
                 break;
-
         }
 
     }
@@ -198,8 +167,35 @@ public class ArmorManager {
                 );
 
                 break;
-
         }
+
+    }
+
+
+
+    private void removeHelmetEffects(Player player) {
+
+        player.removePotionEffect(
+                PotionEffectType.NIGHT_VISION
+        );
+
+        player.removePotionEffect(
+                PotionEffectType.DOLPHINS_GRACE
+        );
+
+    }
+
+
+
+    private void removeChestplateEffects(Player player) {
+
+        player.removePotionEffect(
+                PotionEffectType.FIRE_RESISTANCE
+        );
+
+        player.removePotionEffect(
+                PotionEffectType.STRENGTH
+        );
 
     }
 
