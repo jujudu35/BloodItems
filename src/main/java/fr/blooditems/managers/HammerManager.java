@@ -36,7 +36,7 @@ public class HammerManager {
 
 
 
-        // Durabilité normale
+        // Durabilité comme une pioche normale
         if (player.getGameMode() != GameMode.CREATIVE) {
 
             damageHammer(hammer);
@@ -80,12 +80,13 @@ public class HammerManager {
 
 
     /**
-     * Génère un vrai 3x3x1
+     * Crée une zone 3x3x1 selon la face cassée
      */
     private List<Block> getBlocks3x3(Block center, BlockFace face) {
 
 
         List<Block> blocks = new ArrayList<>();
+
 
         int x = center.getX();
         int y = center.getY();
@@ -93,7 +94,7 @@ public class HammerManager {
 
 
 
-        // Face haut ou bas : couche horizontale
+        // Dessus / dessous = horizontal
         if (face == BlockFace.UP || face == BlockFace.DOWN) {
 
 
@@ -116,13 +117,14 @@ public class HammerManager {
                     );
 
                 }
+
             }
 
         }
 
 
 
-        // Face nord/sud : couche verticale
+        // Nord / Sud = vertical
         else if (face == BlockFace.NORTH || face == BlockFace.SOUTH) {
 
 
@@ -145,13 +147,14 @@ public class HammerManager {
                     );
 
                 }
+
             }
 
         }
 
 
 
-        // Face est/ouest : couche verticale
+        // Est / Ouest = vertical
         else {
 
 
@@ -174,6 +177,7 @@ public class HammerManager {
                     );
 
                 }
+
             }
 
         }
@@ -207,10 +211,13 @@ public class HammerManager {
         );
 
 
+
+        // Solidité comme Minecraft vanilla
         if (unbreaking > 0) {
 
 
             double chance = 1.0 / (unbreaking + 1);
+
 
 
             if (Math.random() > chance) {
