@@ -25,28 +25,21 @@ public class HammerListener implements Listener {
     }
 
 
-    @EventHandler
+     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
 
         Player player = event.getPlayer();
 
         ItemStack item = player.getInventory().getItemInMainHand();
 
-
-        // Vérifie si c'est le Hammer
         if (!itemManager.isHammer(item)) {
             return;
         }
 
-
         Block block = event.getBlock();
 
-
-        // Empêche la casse normale
         event.setCancelled(true);
 
-
-        // Lance la casse 3x3
         hammerManager.breakBlocks(
                 player,
                 block,
@@ -55,16 +48,13 @@ public class HammerListener implements Listener {
 
     }
 
-}
 
+    @EventHandler
+    public void onInteract(org.bukkit.event.player.PlayerInteractEvent event) {
 
+        Player player = event.getPlayer();
 
-  @EventHandler
-  public void onInteract(org.bukkit.event.player.PlayerInteractEvent event) {
-
-    Player player = event.getPlayer();
-
-    ItemStack item = player.getInventory().getItemInMainHand();
+        ItemStack item = player.getInventory().getItemInMainHand();
 
 
         if (!itemManager.isHammer(item)) {
@@ -72,7 +62,6 @@ public class HammerListener implements Listener {
         }
 
 
-        // Évite les actions inutiles avec le Hammer
         if (event.getAction().isRightClick()) {
 
             event.setCancelled(true);
@@ -90,8 +79,7 @@ public class HammerListener implements Listener {
 
         if (itemManager.isHammer(item)) {
 
-            // Le Hammer reste un objet spécial,
-            // aucune action supplémentaire pour le moment.
+            // réservé pour plus tard
 
         }
 
