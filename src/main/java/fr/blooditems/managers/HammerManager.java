@@ -17,8 +17,8 @@ public class HammerManager {
     public void breakBlocks(Player player, Block center, ItemStack hammer) {
 
 
-        // Récupère les blocs autour avant de casser
-        List<Block> blocks = getBlocks3x3(center);
+        // Récupère les blocs selon la direction du joueur
+        List<Block> blocks = getBlocks3x3(player, center);
 
 
 
@@ -27,7 +27,7 @@ public class HammerManager {
 
 
 
-        // Casse les 8 blocs autour
+        // Casse les blocs autour
         for (Block block : blocks) {
 
             breakBlock(player, block, hammer);
@@ -36,7 +36,7 @@ public class HammerManager {
 
 
 
-        // Une seule perte de durabilité comme une pioche normale
+        // Durabilité comme une vraie pioche
         if (player.getGameMode() != GameMode.CREATIVE) {
 
             damageHammer(hammer);
@@ -77,7 +77,6 @@ public class HammerManager {
 
         }
 
-
     }
 
 
@@ -85,13 +84,9 @@ public class HammerManager {
 
 
     /**
-     * Zone 3x3x1
-     *
-     * XXX
-     * XXX
-     * XXX
+     * Hammer 3x3 selon la direction
      */
-    private List<Block> getBlocks3x3(Block center) {
+    private List<Block> getBlocks3x3(Player player, Block center) {
 
 
         List<Block> blocks = new ArrayList<>();
@@ -103,29 +98,75 @@ public class HammerManager {
 
 
 
-        for (int xx = -1; xx <= 1; xx++) {
+        float yaw = player.getLocation().getYaw();
+
+        yaw = (yaw % 360 + 360) % 360;
 
 
-            for (int yy = -1; yy <= 1; yy++) {
+
+        // Nord / Sud
+        if ((yaw >= 45 && yaw < 135) ||
+            (yaw >= 225 && yaw < 315)) {
 
 
 
-                if (xx == 0 && yy == 0) {
-                    continue;
+            for (int xx = -1; xx <= 1; xx++) {
+
+
+                for (int yy = -1; yy <= 1; yy++) {
+
+
+
+                    if (xx == 0 && yy == 0) {
+                        continue;
+                    }
+
+
+
+                    blocks.add(
+                            center.getWorld()
+                                    .getBlockAt(
+                                            x + xx,
+                                            y + yy,
+                                            z
+                                    )
+                    );
+
                 }
 
-
-
-                Block block = center.getWorld()
-                        .getBlockAt(
-                                x + xx,
-                                y + yy,
-                                z
-                        );
+            }
 
 
 
-                blocks.add(block);
+        } else {
+
+
+
+            // Est / Ouest
+
+            for (int zz = -1; zz <= 1; zz++) {
+
+
+                for (int yy = -1; yy <= 1; yy++) {
+
+
+
+                    if (zz == 0 && yy == 0) {
+                        continue;
+                    }
+
+
+
+                    blocks.add(
+                            center.getWorld()
+                                    .getBlockAt(
+                                            x,
+                                            y + yy,
+                                            z + zz
+                                    )
+                    );
+
+                }
 
             }
 
@@ -162,7 +203,7 @@ public class HammerManager {
 
 
 
-        // Fonctionnement vanilla de Solidité
+        // Solidité comme Minecraft vanilla
         if (unbreakingLevel > 0) {
 
 
