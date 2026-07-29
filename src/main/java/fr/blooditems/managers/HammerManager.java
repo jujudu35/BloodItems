@@ -3,6 +3,7 @@ package fr.blooditems.managers;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,11 +15,10 @@ import java.util.List;
 public class HammerManager {
 
 
-    public void breakBlocks(Player player, Block center, ItemStack hammer) {
+    public void breakBlocks(Player player, Block center, BlockFace face, ItemStack hammer) {
 
 
-        // Récupère les blocs selon la direction du joueur
-        List<Block> blocks = getBlocks3x3(player, center);
+        List<Block> blocks = getBlocks3x3(center, face);
 
 
 
@@ -27,7 +27,7 @@ public class HammerManager {
 
 
 
-        // Casse les blocs autour
+        // Casse les 8 blocs autour
         for (Block block : blocks) {
 
             breakBlock(player, block, hammer);
@@ -36,7 +36,7 @@ public class HammerManager {
 
 
 
-        // Durabilité comme une vraie pioche
+        // Durabilité normale
         if (player.getGameMode() != GameMode.CREATIVE) {
 
             damageHammer(hammer);
@@ -65,15 +65,11 @@ public class HammerManager {
 
         if (player.getGameMode() == GameMode.CREATIVE) {
 
-
             block.setType(Material.AIR);
-
 
         } else {
 
-
             block.breakNaturally(hammer);
-
 
         }
 
@@ -84,13 +80,12 @@ public class HammerManager {
 
 
     /**
-     * Hammer 3x3 selon la direction
+     * Génère un vrai 3x3x1
      */
-    private List<Block> getBlocks3x3(Player player, Block center) {
+    private List<Block> getBlocks3x3(Block center, BlockFace face) {
 
 
         List<Block> blocks = new ArrayList<>();
-
 
         int x = center.getX();
         int y = center.getY();
@@ -98,23 +93,42 @@ public class HammerManager {
 
 
 
-        float yaw = player.getLocation().getYaw();
-
-        yaw = (yaw % 360 + 360) % 360;
-
-
-
-        // Nord / Sud
-        if ((yaw >= 45 && yaw < 135) ||
-            (yaw >= 225 && yaw < 315)) {
-
+        // Face haut ou bas : couche horizontale
+        if (face == BlockFace.UP || face == BlockFace.DOWN) {
 
 
             for (int xx = -1; xx <= 1; xx++) {
 
+                for (int zz = -1; zz <= 1; zz++) {
+
+
+                    if (xx == 0 && zz == 0) {
+                        continue;
+                    }
+
+
+                    blocks.add(
+                            center.getWorld().getBlockAt(
+                                    x + xx,
+                                    y,
+                                    z + zz
+                            )
+                    );
+
+                }
+            }
+
+        }
+
+
+
+        // Face nord/sud : couche verticale
+        else if (face == BlockFace.NORTH || face == BlockFace.SOUTH) {
+
+
+            for (int xx = -1; xx <= 1; xx++) {
 
                 for (int yy = -1; yy <= 1; yy++) {
-
 
 
                     if (xx == 0 && yy == 0) {
@@ -122,33 +136,28 @@ public class HammerManager {
                     }
 
 
-
                     blocks.add(
-                            center.getWorld()
-                                    .getBlockAt(
-                                            x + xx,
-                                            y + yy,
-                                            z
-                                    )
+                            center.getWorld().getBlockAt(
+                                    x + xx,
+                                    y + yy,
+                                    z
+                            )
                     );
 
                 }
-
             }
 
-
-
-        } else {
+        }
 
 
 
-            // Est / Ouest
+        // Face est/ouest : couche verticale
+        else {
+
 
             for (int zz = -1; zz <= 1; zz++) {
 
-
                 for (int yy = -1; yy <= 1; yy++) {
-
 
 
                     if (zz == 0 && yy == 0) {
@@ -156,18 +165,15 @@ public class HammerManager {
                     }
 
 
-
                     blocks.add(
-                            center.getWorld()
-                                    .getBlockAt(
-                                            x,
-                                            y + yy,
-                                            z + zz
-                                    )
+                            center.getWorld().getBlockAt(
+                                    x,
+                                    y + yy,
+                                    z + zz
+                            )
                     );
 
                 }
-
             }
 
         }
@@ -190,25 +196,21 @@ public class HammerManager {
         }
 
 
-
         if (!(hammer.getItemMeta() instanceof Damageable damageable)) {
             return;
         }
 
 
 
-        int unbreakingLevel = hammer.getEnchantmentLevel(
+        int unbreaking = hammer.getEnchantmentLevel(
                 Enchantment.UNBREAKING
         );
 
 
-
-        // Solidité comme Minecraft vanilla
-        if (unbreakingLevel > 0) {
+        if (unbreaking > 0) {
 
 
-            double chance = 1.0 / (unbreakingLevel + 1);
-
+            double chance = 1.0 / (unbreaking + 1);
 
 
             if (Math.random() > chance) {
@@ -223,16 +225,13 @@ public class HammerManager {
 
         int damage = damageable.getDamage();
 
-
         int max = hammer.getType().getMaxDurability();
 
 
 
         if (damage + 1 >= max) {
 
-
             hammer.setAmount(0);
-
             return;
 
         }
@@ -241,9 +240,7 @@ public class HammerManager {
 
         damageable.setDamage(damage + 1);
 
-
         hammer.setItemMeta(damageable);
-
 
     }
 
