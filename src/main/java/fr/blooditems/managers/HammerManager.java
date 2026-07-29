@@ -1,6 +1,7 @@
 package fr.blooditems.managers;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,21 +25,25 @@ public class HammerManager {
             }
 
 
+            if (block.getType() == Material.BEDROCK) {
+                continue;
+            }
+
+
             if (player.getGameMode() == GameMode.CREATIVE) {
 
-                block.setType(
-                        org.bukkit.Material.AIR
-                );
+                block.setType(Material.AIR);
 
             } else {
 
                 block.breakNaturally(hammer);
 
-                damageHammer(hammer);
-
             }
 
         }
+
+
+        damageHammer(hammer);
 
     }
 
@@ -47,7 +52,6 @@ public class HammerManager {
     private List<Block> getBlocks3x3(Block center) {
 
         List<Block> blocks = new ArrayList<>();
-
 
         int x = center.getX();
         int y = center.getY();
@@ -74,11 +78,7 @@ public class HammerManager {
                             );
 
 
-                    if (!block.getType().isAir()) {
-
-                        blocks.add(block);
-
-                    }
+                    blocks.add(block);
 
                 }
 
@@ -95,23 +95,33 @@ public class HammerManager {
 
     private void damageHammer(ItemStack hammer) {
 
+        if (hammer == null) {
+            return;
+        }
+
 
         if (!(hammer.getItemMeta() instanceof Damageable damageable)) {
             return;
         }
 
 
-        int damage = damageable.getDamage();
+        int currentDamage = damageable.getDamage();
+
+        int maxDamage = hammer.getType().getMaxDurability();
 
 
-        damage++;
+        if (currentDamage + 1 >= maxDamage) {
+
+            hammer.setAmount(0);
+
+            return;
+
+        }
 
 
-        damageable.setDamage(damage);
-
+        damageable.setDamage(currentDamage + 1);
 
         hammer.setItemMeta(damageable);
-
 
     }
 
