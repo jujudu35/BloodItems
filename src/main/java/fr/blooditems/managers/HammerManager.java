@@ -1,10 +1,10 @@
 package fr.blooditems.managers;
 
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,49 +12,78 @@ import java.util.List;
 public class HammerManager {
 
 
-    public List<Block> getBlocks3x3(Block center, Player player) {
+    public void breakBlocks(Player player, Block center, ItemStack hammer) {
+
+        List<Block> blocks = getBlocks3x3(center);
+
+
+        for (Block block : blocks) {
+
+            if (block.getType().isAir()) {
+                continue;
+            }
+
+
+            if (player.getGameMode() == GameMode.CREATIVE) {
+
+                block.setType(
+                        org.bukkit.Material.AIR
+                );
+
+            } else {
+
+                block.breakNaturally(hammer);
+
+                damageHammer(hammer);
+
+            }
+
+        }
+
+    }
+
+
+
+    private List<Block> getBlocks3x3(Block center) {
 
         List<Block> blocks = new ArrayList<>();
 
-        Location loc = center.getLocation();
+
+        int x = center.getX();
+        int y = center.getY();
+        int z = center.getZ();
 
 
-        int x = loc.getBlockX();
-        int y = loc.getBlockY();
-        int z = loc.getBlockZ();
+        for (int xx = -1; xx <= 1; xx++) {
+
+            for (int yy = -1; yy <= 1; yy++) {
+
+                for (int zz = -1; zz <= 1; zz++) {
 
 
-        for (int offsetX = -1; offsetX <= 1; offsetX++) {
-
-            for (int offsetY = -1; offsetY <= 1; offsetY++) {
-
-                for (int offsetZ = -1; offsetZ <= 1; offsetZ++) {
-
-
-                    if (offsetX == 0 &&
-                        offsetY == 0 &&
-                        offsetZ == 0) {
-
+                    if (xx == 0 && yy == 0 && zz == 0) {
                         continue;
                     }
 
 
                     Block block = center.getWorld()
                             .getBlockAt(
-                                    x + offsetX,
-                                    y + offsetY,
-                                    z + offsetZ
+                                    x + xx,
+                                    y + yy,
+                                    z + zz
                             );
 
 
-                    if (isBreakable(block)) {
+                    if (!block.getType().isAir()) {
 
                         blocks.add(block);
 
                     }
 
                 }
+
             }
+
         }
 
 
@@ -64,98 +93,26 @@ public class HammerManager {
 
 
 
-    private boolean isBreakable(Block block) {
-
-        Material material = block.getType();
-
-
-        return material != Material.AIR
-                && material != Material.BEDROCK
-                && material != Material.BARRIER;
-
-    }
-}
-
-
-
-package fr.blooditems.managers;
-
-import org.bukkit.GameMode;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.List;
-
-public class HammerManager {
-
-
-    public void breakBlocks(Player player, Block center, ItemStack hammer) {
-
-        List<Block> blocks = getBlocks3x3(center, player);
-
-
-        for (Block block : blocks) {
-
-            if (player.getGameMode() != GameMode.CREATIVE) {
-
-                block.breakNaturally(hammer);
-
-                damageHammer(hammer);
-
-            } else {
-
-                block.setType(
-                        org.bukkit.Material.AIR
-                );
-
-            }
-
-        }
-
-    }
-
-
-
     private void damageHammer(ItemStack hammer) {
 
-        if (hammer == null) {
+
+        if (!(hammer.getItemMeta() instanceof Damageable damageable)) {
             return;
         }
 
 
-        if (!hammer.hasItemMeta()) {
-            return;
-        }
+        int damage = damageable.getDamage();
 
 
-        if (hammer.getType().getMaxDurability() <= 0) {
-            return;
-        }
+        damage++;
 
 
-        short durability = hammer.getDurability();
+        damageable.setDamage(damage);
 
 
-        durability++;
+        hammer.setItemMeta(damageable);
 
 
-        if (durability >= hammer.getType().getMaxDurability()) {
-
-            hammer.setAmount(0);
-
-        } else {
-
-            hammer.setDurability(durability);
-
-        }
-
-    }
-
-
-    public List<Block> getBlocks3x3(Block center, Player player) {
-
-        return null;
     }
 
 }
