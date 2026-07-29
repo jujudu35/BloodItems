@@ -60,11 +60,11 @@ public class HammerListener implements Listener {
 
 
   @EventHandler
-    public void onInteract(org.bukkit.event.player.PlayerInteractEvent event) {
+  public void onInteract(org.bukkit.event.player.PlayerInteractEvent event) {
 
-        Player player = event.getPlayer();
+    Player player = event.getPlayer();
 
-        ItemStack item = player.getInventory().getItemInMainHand();
+    ItemStack item = player.getInventory().getItemInMainHand();
 
 
         if (!itemManager.isHammer(item)) {
