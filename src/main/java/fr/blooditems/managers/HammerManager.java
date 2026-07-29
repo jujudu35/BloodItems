@@ -3,8 +3,10 @@ package fr.blooditems.managers;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +17,7 @@ public class HammerManager {
     public void breakBlocks(Player player, Block center, ItemStack hammer) {
 
 
-        // Récupère les blocs autour avant de casser le centre
+        // Récupère les blocs autour avant de casser
         List<Block> blocks = getBlocks3x3(center);
 
 
@@ -32,10 +34,17 @@ public class HammerManager {
 
         }
 
-        // Pas de dégâts manuels :
-        // le Hammer utilise la durabilité normale de la pioche en netherite
+
+
+        // Une seule perte de durabilité comme une pioche normale
+        if (player.getGameMode() != GameMode.CREATIVE) {
+
+            damageHammer(hammer);
+
+        }
 
     }
+
 
 
 
@@ -76,12 +85,11 @@ public class HammerManager {
 
 
     /**
-     * Zone de minage 3x3x1
+     * Zone 3x3x1
      *
      * XXX
      * XXX
      * XXX
-     *
      */
     private List<Block> getBlocks3x3(Block center) {
 
@@ -102,7 +110,6 @@ public class HammerManager {
 
 
 
-                // Ignore le bloc central
                 if (xx == 0 && yy == 0) {
                     continue;
                 }
@@ -120,7 +127,6 @@ public class HammerManager {
 
                 blocks.add(block);
 
-
             }
 
         }
@@ -128,6 +134,74 @@ public class HammerManager {
 
 
         return blocks;
+
+    }
+
+
+
+
+
+    private void damageHammer(ItemStack hammer) {
+
+
+        if (hammer == null) {
+            return;
+        }
+
+
+
+        if (!(hammer.getItemMeta() instanceof Damageable damageable)) {
+            return;
+        }
+
+
+
+        int unbreakingLevel = hammer.getEnchantmentLevel(
+                Enchantment.UNBREAKING
+        );
+
+
+
+        // Fonctionnement vanilla de Solidité
+        if (unbreakingLevel > 0) {
+
+
+            double chance = 1.0 / (unbreakingLevel + 1);
+
+
+
+            if (Math.random() > chance) {
+
+                return;
+
+            }
+
+        }
+
+
+
+        int damage = damageable.getDamage();
+
+
+        int max = hammer.getType().getMaxDurability();
+
+
+
+        if (damage + 1 >= max) {
+
+
+            hammer.setAmount(0);
+
+            return;
+
+        }
+
+
+
+        damageable.setDamage(damage + 1);
+
+
+        hammer.setItemMeta(damageable);
 
 
     }
