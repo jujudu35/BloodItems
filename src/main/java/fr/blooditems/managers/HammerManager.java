@@ -15,43 +15,66 @@ public class HammerManager {
 
     public void breakBlocks(Player player, Block center, ItemStack hammer) {
 
+        // Récupère les blocs autour AVANT de casser le centre
         List<Block> blocks = getBlocks3x3(center);
 
 
+        // Casse le bloc ciblé
+        breakBlock(player, center, hammer);
+
+
+        // Casse les 8 blocs autour
         for (Block block : blocks) {
 
-            if (block.getType().isAir()) {
-                continue;
-            }
-
-
-            if (block.getType() == Material.BEDROCK) {
-                continue;
-            }
-
-
-            if (player.getGameMode() == GameMode.CREATIVE) {
-
-                block.setType(Material.AIR);
-
-            } else {
-
-                block.breakNaturally(hammer);
-
-            }
+            breakBlock(player, block, hammer);
 
         }
 
 
+        // Endommage le Hammer une seule fois
         damageHammer(hammer);
 
     }
 
 
 
+    private void breakBlock(Player player, Block block, ItemStack hammer) {
+
+        if (block.getType().isAir()) {
+            return;
+        }
+
+
+        if (block.getType() == Material.BEDROCK) {
+            return;
+        }
+
+
+        if (player.getGameMode() == GameMode.CREATIVE) {
+
+            block.setType(Material.AIR);
+
+        } else {
+
+            block.breakNaturally(hammer);
+
+        }
+
+    }
+
+
+
+    /**
+     * Crée une zone 3x3x1
+     *
+     * XXX
+     * XXX
+     * XXX
+     */
     private List<Block> getBlocks3x3(Block center) {
 
         List<Block> blocks = new ArrayList<>();
+
 
         int x = center.getX();
         int y = center.getY();
@@ -62,25 +85,22 @@ public class HammerManager {
 
             for (int yy = -1; yy <= 1; yy++) {
 
-                for (int zz = -1; zz <= 1; zz++) {
 
-
-                    if (xx == 0 && yy == 0 && zz == 0) {
-                        continue;
-                    }
-
-
-                    Block block = center.getWorld()
-                            .getBlockAt(
-                                    x + xx,
-                                    y + yy,
-                                    z + zz
-                            );
-
-
-                    blocks.add(block);
-
+                // Ignore le bloc du centre
+                if (xx == 0 && yy == 0) {
+                    continue;
                 }
+
+
+                Block block = center.getWorld()
+                        .getBlockAt(
+                                x + xx,
+                                y + yy,
+                                z
+                        );
+
+
+                blocks.add(block);
 
             }
 
@@ -105,21 +125,20 @@ public class HammerManager {
         }
 
 
-        int currentDamage = damageable.getDamage();
+        int damage = damageable.getDamage();
 
-        int maxDamage = hammer.getType().getMaxDurability();
+        int max = hammer.getType().getMaxDurability();
 
 
-        if (currentDamage + 1 >= maxDamage) {
+        if (damage + 1 >= max) {
 
             hammer.setAmount(0);
-
             return;
 
         }
 
 
-        damageable.setDamage(currentDamage + 1);
+        damageable.setDamage(damage + 1);
 
         hammer.setItemMeta(damageable);
 
