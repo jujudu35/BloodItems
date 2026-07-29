@@ -5,7 +5,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,12 +14,15 @@ public class HammerManager {
 
     public void breakBlocks(Player player, Block center, ItemStack hammer) {
 
-        // Récupère les blocs autour AVANT de casser le centre
+
+        // Récupère les blocs autour avant de casser le centre
         List<Block> blocks = getBlocks3x3(center);
+
 
 
         // Casse le bloc ciblé
         breakBlock(player, center, hammer);
+
 
 
         // Casse les 8 blocs autour
@@ -30,15 +32,16 @@ public class HammerManager {
 
         }
 
-
-        // Endommage le Hammer une seule fois
-        damageHammer(hammer);
+        // Pas de dégâts manuels :
+        // le Hammer utilise la durabilité normale de la pioche en netherite
 
     }
 
 
 
+
     private void breakBlock(Player player, Block block, ItemStack hammer) {
+
 
         if (block.getType().isAir()) {
             return;
@@ -50,28 +53,38 @@ public class HammerManager {
         }
 
 
+
         if (player.getGameMode() == GameMode.CREATIVE) {
+
 
             block.setType(Material.AIR);
 
+
         } else {
+
 
             block.breakNaturally(hammer);
 
+
         }
+
 
     }
 
 
 
+
+
     /**
-     * Crée une zone 3x3x1
+     * Zone de minage 3x3x1
      *
      * XXX
      * XXX
      * XXX
+     *
      */
     private List<Block> getBlocks3x3(Block center) {
+
 
         List<Block> blocks = new ArrayList<>();
 
@@ -81,15 +94,19 @@ public class HammerManager {
         int z = center.getZ();
 
 
+
         for (int xx = -1; xx <= 1; xx++) {
+
 
             for (int yy = -1; yy <= 1; yy++) {
 
 
-                // Ignore le bloc du centre
+
+                // Ignore le bloc central
                 if (xx == 0 && yy == 0) {
                     continue;
                 }
+
 
 
                 Block block = center.getWorld()
@@ -100,47 +117,18 @@ public class HammerManager {
                         );
 
 
+
                 blocks.add(block);
+
 
             }
 
         }
 
 
+
         return blocks;
 
-    }
-
-
-
-    private void damageHammer(ItemStack hammer) {
-
-        if (hammer == null) {
-            return;
-        }
-
-
-        if (!(hammer.getItemMeta() instanceof Damageable damageable)) {
-            return;
-        }
-
-
-        int damage = damageable.getDamage();
-
-        int max = hammer.getType().getMaxDurability();
-
-
-        if (damage + 1 >= max) {
-
-            hammer.setAmount(0);
-            return;
-
-        }
-
-
-        damageable.setDamage(damage + 1);
-
-        hammer.setItemMeta(damageable);
 
     }
 
