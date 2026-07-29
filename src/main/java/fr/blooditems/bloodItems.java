@@ -1,4 +1,4 @@
-package fr.blooditems;
+package fr.blooditems; 
 
 import fr.blooditems.commands.BloodItemsCommand;
 import fr.blooditems.listeners.ArmorListener;
