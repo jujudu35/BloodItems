@@ -4,30 +4,42 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 public class ArmorManager {
 
+    /*
+     * Effets actuellement donnés par l'armure.
+     */
+    private final Map<UUID, Set<PotionEffectType>> armorEffects =
+            new HashMap<>();
+
+
+    // =========================================================
+    // HELMET
+    // =========================================================
 
     public void applyHelmetEffect(Player player, String id) {
 
-        removeHelmetEffects(player);
+        removeArmorEffect(player, PotionEffectType.NIGHT_VISION);
+        removeArmorEffect(player, PotionEffectType.DOLPHINS_GRACE);
 
         if (id == null) {
             return;
         }
 
-
         switch (id) {
 
             case "farm_helmet":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.NIGHT_VISION,
-                                40,
-                                0,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.NIGHT_VISION,
+                        0
                 );
 
                 break;
@@ -35,44 +47,38 @@ public class ArmorManager {
 
             case "blood_helmet":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.DOLPHINS_GRACE,
-                                40,
-                                0,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.DOLPHINS_GRACE,
+                        0
                 );
 
                 break;
         }
-
     }
 
 
+    // =========================================================
+    // CHESTPLATE
+    // =========================================================
 
     public void applyChestplateEffect(Player player, String id) {
 
-        removeChestplateEffects(player);
+        removeArmorEffect(player, PotionEffectType.FIRE_RESISTANCE);
+        removeArmorEffect(player, PotionEffectType.STRENGTH);
 
         if (id == null) {
             return;
         }
 
-
         switch (id) {
 
             case "farm_chestplate":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.FIRE_RESISTANCE,
-                                40,
-                                0,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.FIRE_RESISTANCE,
+                        0
                 );
 
                 break;
@@ -80,44 +86,38 @@ public class ArmorManager {
 
             case "blood_chestplate":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.STRENGTH,
-                                40,
-                                1,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.STRENGTH,
+                        1
                 );
 
                 break;
         }
-
     }
 
 
+    // =========================================================
+    // LEGGINGS
+    // =========================================================
 
     public void applyLeggingsEffect(Player player, String id) {
 
-        removeLeggingsEffects(player);
+        removeArmorEffect(player, PotionEffectType.LUCK);
+        removeArmorEffect(player, PotionEffectType.HASTE);
 
         if (id == null) {
             return;
         }
 
-
         switch (id) {
 
             case "farm_leggings":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.LUCK,
-                                40,
-                                0,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.LUCK,
+                        0
                 );
 
                 break;
@@ -125,102 +125,133 @@ public class ArmorManager {
 
             case "blood_leggings":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.HASTE,
-                                40,
-                                1,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.HASTE,
+                        1
                 );
 
                 break;
         }
-
     }
 
 
+    // =========================================================
+    // BOOTS
+    // =========================================================
 
     public void applyBootsEffect(Player player, String id) {
 
-        removeBootsEffects(player);
+        removeArmorEffect(player, PotionEffectType.SPEED);
 
         if (id == null) {
             return;
         }
-
 
         switch (id) {
 
             case "farm_boots":
             case "blood_boots":
 
-                player.addPotionEffect(
-                        new PotionEffect(
-                                PotionEffectType.SPEED,
-                                40,
-                                1,
-                                true,
-                                false
-                        )
+                giveArmorEffect(
+                        player,
+                        PotionEffectType.SPEED,
+                        1
                 );
 
                 break;
         }
-
     }
 
 
+    // =========================================================
+    // DONNER UN EFFET PAR L'ARMURE
+    // =========================================================
 
-    private void removeHelmetEffects(Player player) {
+    private void giveArmorEffect(
+            Player player,
+            PotionEffectType type,
+            int amplifier
+    ) {
 
-        player.removePotionEffect(
-                PotionEffectType.NIGHT_VISION
+        UUID uuid = player.getUniqueId();
+
+        armorEffects
+                .computeIfAbsent(
+                        uuid,
+                        k -> new HashSet<>()
+                )
+                .add(type);
+
+
+        player.addPotionEffect(
+                new PotionEffect(
+                        type,
+                        40,
+                        amplifier,
+                        true,
+                        false
+                )
         );
-
-        player.removePotionEffect(
-                PotionEffectType.DOLPHINS_GRACE
-        );
-
     }
 
 
+    // =========================================================
+    // RETIRER UNIQUEMENT L'EFFET DE L'ARMURE
+    // =========================================================
 
-    private void removeChestplateEffects(Player player) {
+    private void removeArmorEffect(
+            Player player,
+            PotionEffectType type
+    ) {
 
-        player.removePotionEffect(
-                PotionEffectType.FIRE_RESISTANCE
-        );
+        UUID uuid = player.getUniqueId();
 
-        player.removePotionEffect(
-                PotionEffectType.STRENGTH
-        );
+        Set<PotionEffectType> effects =
+                armorEffects.get(uuid);
 
+
+        if (effects == null) {
+            return;
+        }
+
+
+        if (!effects.contains(type)) {
+            return;
+        }
+
+
+        player.removePotionEffect(type);
+
+        effects.remove(type);
+
+
+        if (effects.isEmpty()) {
+            armorEffects.remove(uuid);
+        }
     }
 
 
+    // =========================================================
+    // NETTOYAGE DU JOUEUR
+    // =========================================================
 
-    private void removeLeggingsEffects(Player player) {
+    public void clearPlayer(Player player) {
 
-        player.removePotionEffect(
-                PotionEffectType.LUCK
-        );
+        UUID uuid = player.getUniqueId();
 
-        player.removePotionEffect(
-                PotionEffectType.HASTE
-        );
+        Set<PotionEffectType> effects =
+                armorEffects.remove(uuid);
 
+
+        if (effects == null) {
+            return;
+        }
+
+
+        for (PotionEffectType type : effects) {
+
+            player.removePotionEffect(type);
+        }
     }
-
-
-
-    private void removeBootsEffects(Player player) {
-
-        player.removePotionEffect(
-                PotionEffectType.SPEED
-        );
-
-    }
-
 }
